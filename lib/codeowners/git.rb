@@ -11,7 +11,7 @@ module Codeowners
 
     def contributors(file)
       require "codeowners/git/contributors"
-      output = git(["log", "--shortstat", %(--pretty=format:"%cN <%ce>"), "--no-color", "--", escape(file)])
+      output = git(["log", "--max-count=500", "--shortstat", %(--pretty=format:"author:%aN email:%ae"), "--no-color", "--", escape(file)])
 
       Contributors.call(file, output)
     end
