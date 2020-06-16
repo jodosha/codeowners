@@ -55,11 +55,16 @@ module Codeowners
         DEFAULT_CODEOWNERS_PATH = ::File.join(".github", "CODEOWNERS").freeze
         private_constant :DEFAULT_CODEOWNERS_PATH
 
-        desc "List code contributors for a file"
+        desc "List code contributors for a file (or a pattern)"
 
-        argument :file, required: true, desc: "File to check"
+        argument :file, required: true, desc: "File (or pattern) to check"
 
         option :base_directory, type: :string, default: DEFAULT_BASE_DIRECTORY, desc: "Base directory"
+
+        example [
+          "path/to/file.rb # file",
+          "'path/to/**/*.rb' # pattern"
+        ]
 
         def call(file:, base_directory:, **)
           result = Codeowners::ListContributors.new(base_directory).call(file)
