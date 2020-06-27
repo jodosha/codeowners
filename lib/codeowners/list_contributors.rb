@@ -17,14 +17,18 @@ module Codeowners
       def to_s
         [@file, "", *@contributors.map(&:to_s)].join("\n")
       end
+
+      def to_csv
+        @contributors.map(&:to_csv).join("\n")
+      end
     end
 
     def initialize(base_directory, git: Git.new(base_directory))
       @git = git
     end
 
-    def call(file)
-      contributors = @git.contributors(file)
+    def call(file, debug = false)
+      contributors = @git.contributors(file, debug)
       return Result.new if contributors.empty?
 
       contributors = contributors.each.lazy.sort_by { |c| -c.insertions }

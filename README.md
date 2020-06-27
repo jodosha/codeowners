@@ -34,6 +34,17 @@ Person One <person.one@company.com> / +106, -0
 Person Two <person.two@company.com> / +12, -2
 ```
 
+The command accepts also a pattern to match files in bulk.
+
+```shell
+$ codeowners contributors 'path/to/**/*.rb'
+path/to/**/*.rb
+
+Person One <person.one@company.com> / +243, -438
+Person Three <person.three@company.com> / +104, -56
+Person Two <person.two@company.com> / +12, -2
+```
+
 ### Help
 
 For a complete set of options, please run:

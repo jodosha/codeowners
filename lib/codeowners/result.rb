@@ -2,6 +2,8 @@
 
 module Codeowners
   class Result
+    attr_reader :owners
+
     def initialize(pattern = nil, owners = [])
       @pattern = pattern
       @owners = owners

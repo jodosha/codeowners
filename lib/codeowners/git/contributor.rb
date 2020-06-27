@@ -18,6 +18,10 @@ module Codeowners
       def to_s
         "#{name} <#{email}> / +#{insertions}, -#{deletions}"
       end
+
+      def to_csv
+        "#{name}, #{email}, #{insertions}, #{deletions}"
+      end
     end
   end
 end

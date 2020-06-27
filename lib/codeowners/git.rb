@@ -9,9 +9,10 @@ module Codeowners
       @base_directory = Pathname.new(::File.expand_path(base_directory))
     end
 
-    def contributors(file)
+    def contributors(file, debug = false)
       require "codeowners/git/contributors"
-      output = git(["log", "--max-count=500", "--shortstat", %(--pretty=format:"author:%aN email:%ae"), "--no-color", "--", escape(file)])
+      output = git(["log", "--numstat", %(--pretty=format:"author:%aN email:%ae"), "--no-color", "--", escape(file)])
+      print_debug(output, debug)
 
       Contributors.call(file, output)
     end
@@ -41,6 +42,13 @@ module Codeowners
         error.call(stderr.read) unless wait_thr.value.success?
         return stdout.read
       end
+    end
+
+    def print_debug(output, debug)
+      return unless debug
+
+      puts output
+      puts "\n" * 10
     end
   end
 end

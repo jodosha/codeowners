@@ -36,27 +36,37 @@ module Codeowners
         while lines.any?
           commit = lines.take_while { |line| line != "" }
           yield parse(commit.dup) unless commit.empty?
-          lines -= commit
-          lines.shift
+          lines.shift(commit.size + 1)
         end
       end
 
       def self.parse(commit)
-        stats = commit.pop
-        stats = stats.split(", ")
+        authors, stats = commit.partition { |line| line.match?(/author:/) }
 
-        _, insertions, deletions = *stats
-        insertions = insertions.to_i
-        deletions = deletions.to_i
+        [extract_authors(authors), *calculate_stats(stats)]
+      end
 
-        authors = commit.map do |author|
+      def self.extract_authors(authors)
+        authors.map do |author|
           {
-            "name" => author.scan(/author:(.*)email:/).flatten.first.chop,
-            "email" => author.scan(/email:(.*)/).flatten.first
+            "name" => scan(author, /author:(.*)email:/).chop,
+            "email" => scan(author, /email:(.*)/)
           }
-        end
+        end.uniq
+      end
 
-        [authors.uniq, insertions, deletions]
+      def self.calculate_stats(stats)
+        stats.each_with_object([0, 0]) do |stat, result|
+          stat = stat.split(/[[:space:]]+/)
+
+          insertions, deletions, = *stat
+          result[0] += Integer(insertions)
+          result[1] += Integer(deletions)
+        end
+      end
+
+      def self.scan(string, pattern)
+        string.scan(pattern).flatten.first
       end
 
       def initialize(data)
