@@ -95,9 +95,42 @@ module Codeowners
         end
       end
 
+      module Import
+        class Org < Command
+          DEFAULT_STORAGE_PATH = ::File.join(Dir.pwd, "codeowners.json").freeze
+          private_constant :DEFAULT_STORAGE_PATH
+
+          DEFAULT_DEBUG = false
+          private_constant :DEFAULT_DEBUG
+
+          desc "Import teams and members for a GitHub organization"
+
+          argument :org, required: true, desc: "GitHub organization login"
+          argument :token, required: true, desc: "GitHub APIv3 token"
+
+          option :storage, type: :string, default: DEFAULT_STORAGE_PATH, desc: "Storage path (default: #{DEFAULT_STORAGE_PATH})"
+          option :debug, type: :boolean, default: DEFAULT_DEBUG, desc: "Print debug information to stdout"
+
+          example [
+            "hanami s3cr374p1t0k3n"
+          ]
+
+          def call(org:, token:, storage:, debug:, **)
+            client = Codeowners::Import::Client.new(token, out)
+            storage = Codeowners::Storage.new(storage)
+
+            Codeowners::Import::Organization.new(client, storage).call(org, debug)
+          end
+        end
+      end
+
       register "version",      Version, aliases: ["v", "-v", "--version"]
       register "list",         List
       register "contributors", Contributors
+
+      register "import" do |prefix|
+        prefix.register "org", Import::Org
+      end
     end
   end
 end

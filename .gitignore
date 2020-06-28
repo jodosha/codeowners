@@ -8,3 +8,4 @@
 /tmp/
 Gemfile.lock
 .rubocop-*
+codeowners.json
