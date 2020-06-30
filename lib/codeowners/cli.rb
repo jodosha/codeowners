@@ -95,6 +95,67 @@ module Codeowners
         end
       end
 
+      class Guess < Command
+        DEFAULT_BASE_DIRECTORY = Dir.pwd.dup.freeze
+        private_constant :DEFAULT_BASE_DIRECTORY
+
+        DEFAULT_CODEOWNERS_PATH = ::File.join(".github", "CODEOWNERS").freeze
+        private_constant :DEFAULT_CODEOWNERS_PATH
+
+        FORMAT_MAPPING = { "string" => "to_s", "csv" => "to_csv" }.freeze
+        private_constant :FORMAT_MAPPING
+
+        FORMAT_VALUES = FORMAT_MAPPING.keys.freeze
+        private_constant :FORMAT_VALUES
+
+        DEFAULT_FORMAT = FORMAT_VALUES.first
+        private_constant :DEFAULT_FORMAT
+
+        DEFAULT_STORAGE_PATH = ::File.join(Dir.pwd, "codeowners.json").freeze
+        private_constant :DEFAULT_STORAGE_PATH
+
+        DEFAULT_DEBUG = false
+        private_constant :DEFAULT_DEBUG
+
+        desc "Check CODEOWNERS for a file (or a pattern), if missing, it tries to guess, by looking at the git commit history"
+
+        argument :file, required: true, desc: "File (or pattern) to check"
+
+        option :base_directory, type: :string, default: DEFAULT_BASE_DIRECTORY, desc: "Base directory"
+        option :codeowners,     type: :string, default: DEFAULT_CODEOWNERS_PATH, desc: "Path to CODEOWNERS file"
+        option :storage, type: :string, default: DEFAULT_STORAGE_PATH, desc: "Storage path (default: #{DEFAULT_STORAGE_PATH})"
+
+        option :format, type: :string, default: DEFAULT_FORMAT, values: FORMAT_VALUES, desc: "Output format"
+        option :debug, type: :boolean, default: DEFAULT_DEBUG, desc: "Print debug information to stdout"
+
+        example [
+          "path/to/file.rb # file",
+          "'path/to/**/*.rb' # pattern"
+        ]
+
+        def call(file:, base_directory:, codeowners:, storage:, format:, debug:, **)
+          owners = Codeowners::ListOwners.new(base_directory, codeowners)
+          contributors = Codeowners::ListContributors.new(base_directory)
+          storage = Codeowners::Storage.new(storage)
+
+          result = Codeowners::Guess.new(owners, contributors, storage, base_directory, out).call(file, debug)
+          # exit(1) unless result.successful?
+
+          out.puts output(result, format)
+        end
+
+        private
+
+        def output(result, format)
+          # method_name = FORMAT_MAPPING.fetch(format)
+          return unless format == "csv"
+
+          result.map do |file, data|
+            "#{file},#{data.fetch(:teams).join('/')},#{data.fetch(:codeowners)}"
+          end.join("\n")
+        end
+      end
+
       module Import
         class Org < Command
           DEFAULT_STORAGE_PATH = ::File.join(Dir.pwd, "codeowners.json").freeze
@@ -127,6 +188,7 @@ module Codeowners
       register "version",      Version, aliases: ["v", "-v", "--version"]
       register "list",         List
       register "contributors", Contributors
+      register "guess",        Guess
 
       register "import" do |prefix|
         prefix.register "org", Import::Org

@@ -16,5 +16,9 @@ module Codeowners
     def to_s
       "#{@pattern}\n\n#{@owners.join('\n')}"
     end
+
+    def to_a
+      @owners.dup.flatten
+    end
   end
 end

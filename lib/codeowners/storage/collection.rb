@@ -9,6 +9,14 @@ module Codeowners
         end
       end
 
+      def find(&blk)
+        collection.values.find(&blk)
+      end
+
+      def find_all(&blk)
+        collection.values.find_all(&blk)
+      end
+
       def upsert(*records)
         records = Array(records).flatten
 

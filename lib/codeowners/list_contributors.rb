@@ -18,6 +18,10 @@ module Codeowners
         [@file, "", *@contributors.map(&:to_s)].join("\n")
       end
 
+      def to_a
+        @contributors.dup
+      end
+
       def to_csv
         @contributors.map(&:to_csv).join("\n")
       end

@@ -6,6 +6,7 @@ module Codeowners
   require "codeowners/storage"
   require "codeowners/list_owners"
   require "codeowners/list_contributors"
+  require "codeowners/guess"
   require "codeowners/import/client"
   require "codeowners/import/organization"
 
