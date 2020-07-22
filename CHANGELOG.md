@@ -1,9 +1,10 @@
 # Codeowners
 Simple CLI to interact with GitHub CODEOWNERS
 
-## (unreleased)
+## v0.0.3 - 2020-07-22
 ### Added
 - [Luca Guidi] Added `codeowners guess`
+- [Luca Guidi] Added `codeowners import org`
 
 ## v0.0.2 - 2020-06-27
 ### Added
