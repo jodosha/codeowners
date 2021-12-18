@@ -1,6 +1,10 @@
 # Codeowners
 Simple CLI to interact with GitHub CODEOWNERS
 
+## v0.0.5 - 2021-12-18
+### Fixed
+- [Luca Guidi] Added missing `require` of `Codeowners::Result` from `lib/codeowners/list_owners.rb`
+
 ## v0.0.4 - 2021-05-21
 ### Fixed
 - [Luca Guidi] Make `codeowners list` compatible with [CODEOWNERS spec](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-code-owners#codeowners-syntax)
